@@ -19,6 +19,7 @@ from tensorflow.keras import activations
 from tensorflow.keras import layers
 from tensorflow.keras import losses
 from tensorflow.python.util import nest
+from tensorflow.python.keras.layers import Lambda
 
 from autokeras import adapters
 from autokeras import analysers
@@ -306,3 +307,84 @@ class SegmentationHead(ClassificationHead):
 
     def get_adapter(self):
         return adapters.SegmentationHeadAdapter(name=self.name)
+
+class ImageHead(head_module.Head):
+    """ Convolution image output.
+
+    Use L1 loss. Use PSNR as metrics by default.
+
+    # Arguments
+        output_shape: (int, int, int, int). shape of image (batch, x, y, channels) If None, it will be inferred from the data.
+        loss: A Keras loss function. Defaults to TODO
+        metrics: A list of Keras metrics. Defaults to use "PSNR".
+        kernel_size:
+        filters:
+
+    """
+
+    def __init__(self,
+                 output_shape: Optional[Tuple[int, int, int]] = None,
+                 loss: types.LossType = tf.keras.losses.MeanAbsoluteError(),
+                 metrics: Optional[types.MetricsType] = None,
+                kernel_size: Optional[Union[int,hyperparameters.Choice]] = None,
+                 filters: Optional[int] = 3,
+                 **kwargs
+                 ):
+        super().__init__(loss=loss, metrics=metrics, **kwargs)
+        self.output_shape = output_shape
+
+        self.kernel_size = kernel_size
+        self.filters = filters
+        # self.__class__.__name__ = "Conv2D"
+
+        # wat is self add one dimension??
+
+    def get_config(self):
+        # update config of parent class with new member vars of this head
+        config = super().get_config()
+        config.update({"output_shape": self.output_shape,
+                       "kernel_size": self.kernel_size, "filters": self.filters})
+        # config.update({"output_shape": self.output_shape})
+        return config
+
+    @staticmethod
+    def denormalize(x):
+        return x * 255 
+
+    def build(self, hp, inputs=None):
+        inputs = tf.nest.flatten(inputs)
+        utils.validate_num_inputs(inputs, 1)
+        input_node = inputs[0]
+        output_node = input_node
+        if self.kernel_size is not None:
+            kernel_size = self.kernel_size
+        else:
+            kernel_size = hp.Choice("kernel_size", [3, 5, 7], default=3)
+
+        output_node = tf.keras.layers.Conv2D(
+            self.filters, kernel_size, padding="same")(output_node)
+
+        output_node=Lambda(self.denormalize,name=self.name)(output_node)
+        return output_node
+
+    def config_from_analyser(self, analyser):
+        super().config_from_analyser(analyser)
+        # TODO i dont understand what this does
+        # I put 4 because of dimensions of output shape
+        # I think it is 1 in source code since minimal shape is (batch, regression/class)
+        self._add_one_dimension = len(analyser.shape) < 4
+
+    def get_adapter(self):
+        return adapters.ImageHeadAdapter(name=self.name)
+
+    def get_analyser(self):
+        return analysers.ImageHeadAnalyser(name=self.name, output_shape=self.output_shape)
+
+    def get_hyper_preprocessors(self):
+        hyper_preprocessors = []
+        if self._add_one_dimension:
+            hyper_preprocessors.append(
+                hpps_module.DefaultHyperPreprocessor(
+                    preprocessors.AddOneDimension())
+            )
+        return hyper_preprocessors

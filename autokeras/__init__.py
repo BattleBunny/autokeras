@@ -28,6 +28,7 @@ from autokeras.blocks import Normalization
 from autokeras.blocks import RegressionHead
 from autokeras.blocks import ResNetBlock
 from autokeras.blocks import RNNBlock
+# from autokeras.blocks import UpscalingBlock
 from autokeras.blocks import SpatialReduction
 from autokeras.blocks import StructuredDataBlock
 from autokeras.blocks import TemporalReduction
