@@ -30,6 +30,7 @@ from autokeras.engine import head as head_module
 from autokeras.utils import types
 from autokeras.utils import utils
 
+from keras_tuner.engine import hyperparameters
 
 class ClassificationHead(head_module.Head):
     """Classification Dense layers.
