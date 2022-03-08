@@ -20,4 +20,4 @@ from autokeras.adapters.input_adapters import TimeseriesAdapter
 from autokeras.adapters.output_adapters import ClassificationAdapter
 from autokeras.adapters.output_adapters import RegressionAdapter
 from autokeras.adapters.output_adapters import SegmentationHeadAdapter
-from autokeras.adapaters.output_adapters import ImageHeadAdapter
+from autokeras.adapters.output_adapters import ImageHeadAdapter

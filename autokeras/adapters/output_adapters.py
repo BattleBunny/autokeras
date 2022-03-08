@@ -45,13 +45,11 @@ class HeadAdapter(adapter_module.Adapter):
 class ClassificationAdapter(HeadAdapter):
     pass
 
-
 class RegressionAdapter(HeadAdapter):
     pass
-
 
 class SegmentationHeadAdapter(ClassificationAdapter):
     pass
 
-class ImageHeadAdapter(ClassificationAdapter):
+class ImageHeadAdapter(HeadAdapter):
     pass
