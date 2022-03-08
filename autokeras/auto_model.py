@@ -452,7 +452,7 @@ class AutoModel(object):
         )
         return pipeline.postprocess(y)
 
-    def evaluate(self, x, y=None, batch_size=32, verbose=1,custom_objects={} **kwargs):
+    def evaluate(self, x, y=None, batch_size=32, verbose=1,custom_objects={}, **kwargs):
         """Evaluate the best model for the given data.
 
         # Arguments
