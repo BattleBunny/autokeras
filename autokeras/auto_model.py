@@ -484,6 +484,8 @@ class AutoModel(object):
         dataset = pipeline.transform(dataset)
         if custom_objects:
             model = self.tuner.get_best_model(custom_objects=custom_objects)
+            # only gets metrics from custom_objects for now
+            model.compile(metrics=[val for key,val in custom_objects.items()])
         else:
             model = self.tuner.get_best_model()
         return utils.evaluate_with_adaptive_batch_size(
