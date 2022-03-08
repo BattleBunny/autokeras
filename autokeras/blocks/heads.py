@@ -363,9 +363,9 @@ class ImageHead(head_module.Head):
             kernel_size = hp.Choice("kernel_size", [3, 5, 7], default=3)
 
         output_node = tf.keras.layers.Conv2D(
-            self.filters, kernel_size, padding="same")(output_node)
+            self.filters, kernel_size, padding="same",name=self.name)(output_node)
 
-        output_node=Lambda(self.denormalize,name=self.name)(output_node)
+        # output_node=Lambda(self.denormalize,name=self.name)(output_node)
         return output_node
 
     def config_from_analyser(self, analyser):
