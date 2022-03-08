@@ -27,6 +27,7 @@ from autokeras.blocks.basic import XceptionBlock
 from autokeras.blocks.heads import ClassificationHead
 from autokeras.blocks.heads import RegressionHead
 from autokeras.blocks.heads import SegmentationHead
+from autokeras.blocks.heads import ImageHead
 from autokeras.blocks.preprocessing import CategoricalToNumerical
 from autokeras.blocks.preprocessing import ImageAugmentation
 from autokeras.blocks.preprocessing import Normalization

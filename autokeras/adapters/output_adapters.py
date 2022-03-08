@@ -52,3 +52,6 @@ class RegressionAdapter(HeadAdapter):
 
 class SegmentationHeadAdapter(ClassificationAdapter):
     pass
+
+class ImageHeadAdapter(ClassificationAdapter):
+    pass

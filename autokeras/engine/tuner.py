@@ -58,9 +58,12 @@ class AutoTuner(keras_tuner.engine.tuner.Tuner):
         # Override the function to prevent building the model during initialization.
         return
 
-    def get_best_model(self):
+    def get_best_model(self,custom_objects={}):
         with hm_module.maybe_distribute(self.distribution_strategy):
-            model = tf.keras.models.load_model(self.best_model_path)
+            if custom_objects:
+                model = tf.keras.models.load_model(self.best_model_path, custom_objects=custom_objects)
+            else:
+                model = tf.keras.models.load_model(self.best_model_path)
         return model
 
     def get_best_pipeline(self):

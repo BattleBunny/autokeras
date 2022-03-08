@@ -118,3 +118,19 @@ class RegressionAnalyser(TargetAnalyser):
         if len(self.shape) == 1:
             return 1
         return self.shape[1]
+
+class ImageHeadAnalyser(TargetAnalyser):
+    def __init__(self, output_shape=None, ** kwargs):
+        super().__init__(**kwargs)
+        self.output_shape = output_shape
+
+    def finalize(self):
+
+        if self.output_shape and (tuple(self.shape[:1]) != self.output_shape):
+            raise ValueError(
+                "Expect the target data for {name} to have shape "
+                "(batch_size, {output_shape}), "
+                "but got {shape}.".format(
+                    name=self.name, output_shape=self.output_shape, shape=self.shape
+                )
+            ) 

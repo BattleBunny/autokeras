@@ -275,6 +275,7 @@ class ConvBlock(block_module.Block):
         max_pooling: Optional[bool] = None,
         separable: Optional[bool] = None,
         dropout: Optional[float] = None,
+        same_padding: Optional[bool]=False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -303,6 +304,7 @@ class ConvBlock(block_module.Block):
         self.max_pooling = max_pooling
         self.separable = separable
         self.dropout = dropout
+        self.same_padding=same_padding
 
     def get_config(self):
         config = super().get_config()
@@ -315,6 +317,7 @@ class ConvBlock(block_module.Block):
                 "max_pooling": self.max_pooling,
                 "separable": self.separable,
                 "dropout": self.dropout,
+                "same_padding":self.same_padding,
             }
         )
         return config
@@ -361,21 +364,21 @@ class ConvBlock(block_module.Block):
                         self.filters, hp, "filters_{i}_{j}".format(i=i, j=j)
                     ),
                     kernel_size,
-                    padding=self._get_padding(kernel_size, output_node),
+                    padding=self._get_padding(kernel_size, output_node,self.same_padding),
                     activation="relu",
                 )(output_node)
             if max_pooling:
                 output_node = pool(
                     kernel_size - 1,
-                    padding=self._get_padding(kernel_size - 1, output_node),
+                    padding=self._get_padding(kernel_size - 1, output_node,self.same_padding),
                 )(output_node)
             if dropout > 0:
                 output_node = layers.Dropout(dropout)(output_node)
         return output_node
 
     @staticmethod
-    def _get_padding(kernel_size, output_node):
-        if all(kernel_size * 2 <= length for length in output_node.shape[1:-1]):
+    def _get_padding(kernel_size, output_node,same_padding):
+        if not same_padding and all(kernel_size * 2 <= length for length in output_node.shape[1:-1]):
             return "valid"
         return "same"
 

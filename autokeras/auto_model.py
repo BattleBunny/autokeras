@@ -419,7 +419,7 @@ class AutoModel(object):
         # It matches the single IO case.
         return len(shapes) == 2 and len(self.inputs) == 1 and len(self.outputs) == 1
 
-    def predict(self, x, batch_size=32, verbose=1, **kwargs):
+    def predict(self, x, batch_size=32, verbose=1,custom_objects={}, **kwargs):
         """Predict the output for a given testing data.
 
         # Arguments
@@ -440,7 +440,10 @@ class AutoModel(object):
         self._check_data_format((x, None), predict=True)
         dataset = self._adapt(x, self.inputs, batch_size)
         pipeline = self.tuner.get_best_pipeline()
-        model = self.tuner.get_best_model()
+        if custom_objects:
+            model = self.tuner.get_best_model(custom_objects=custom_objects)
+        else:
+            model = self.tuner.get_best_model()
         dataset = pipeline.transform_x(dataset)
         dataset = tf.data.Dataset.zip((dataset, dataset))
         y = model.predict(dataset, **kwargs)
@@ -449,7 +452,7 @@ class AutoModel(object):
         )
         return pipeline.postprocess(y)
 
-    def evaluate(self, x, y=None, batch_size=32, verbose=1, **kwargs):
+    def evaluate(self, x, y=None, batch_size=32, verbose=1,custom_objects={} **kwargs):
         """Evaluate the best model for the given data.
 
         # Arguments
@@ -479,16 +482,21 @@ class AutoModel(object):
         dataset = tf.data.Dataset.zip((x, y))
         pipeline = self.tuner.get_best_pipeline()
         dataset = pipeline.transform(dataset)
-        model = self.tuner.get_best_model()
+        if custom_objects:
+            model = self.tuner.get_best_model(custom_objects=custom_objects)
+        else:
+            model = self.tuner.get_best_model()
         return utils.evaluate_with_adaptive_batch_size(
             model=model, batch_size=batch_size, x=dataset, verbose=verbose, **kwargs
         )
 
-    def export_model(self):
+    def export_model(self,custom_objects={}):
         """Export the best Keras Model.
 
         # Returns
             tf.keras.Model instance. The best model found during the search, loaded
             with trained weights.
         """
+        if custom_objects:
+            return self.tuner.get_best_model(custom_objects=custom_objects)
         return self.tuner.get_best_model()
