@@ -125,7 +125,6 @@ class ImageHeadAnalyser(TargetAnalyser):
         self.output_shape = output_shape
 
     def finalize(self):
-
         if self.output_shape and (tuple(self.shape[:1]) != self.output_shape):
             raise ValueError(
                 "Expect the target data for {name} to have shape "
