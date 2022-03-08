@@ -487,7 +487,7 @@ class AutoModel(object):
         else:
             model = self.tuner.get_best_model()
         return utils.evaluate_with_adaptive_batch_size(
-            model=model, batch_size=batch_size, x=dataset, verbose=verbose,custom_objects=custom_objects **kwargs
+            model=model, batch_size=batch_size, x=dataset, verbose=verbose,custom_objects=custom_objects, **kwargs
         )
 
     def export_model(self,custom_objects={}):
