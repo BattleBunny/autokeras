@@ -327,7 +327,7 @@ class ImageHead(head_module.Head):
                  output_shape: Optional[Tuple[int, int, int]] = None,
                  loss: types.LossType = tf.keras.losses.MeanAbsoluteError(),
                  metrics: Optional[types.MetricsType] = None,
-                kernel_size: Optional[Union[int,hyperparameters.Choice]] = None,
+                kernel_size: Optional[int] = 1,
                  filters: Optional[int] = 3,
                  **kwargs
                  ):
@@ -345,7 +345,6 @@ class ImageHead(head_module.Head):
         config = super().get_config()
         config.update({"output_shape": self.output_shape,
                        "kernel_size": self.kernel_size, "filters": self.filters})
-        # config.update({"output_shape": self.output_shape})
         return config
 
     @staticmethod
@@ -357,22 +356,13 @@ class ImageHead(head_module.Head):
         utils.validate_num_inputs(inputs, 1)
         input_node = inputs[0]
         output_node = input_node
-        if self.kernel_size is not None:
-            kernel_size = self.kernel_size
-        else:
-            kernel_size = hp.Choice("kernel_size", [3, 5, 7], default=3)
 
         output_node = tf.keras.layers.Conv2D(
-            self.filters, kernel_size, padding="same",name=self.name)(output_node)
-
-        # output_node=Lambda(self.denormalize,name=self.name)(output_node)
+            self.filters, self.kernel_size, padding="same",name=self.name)(output_node)
         return output_node
 
     def config_from_analyser(self, analyser):
         super().config_from_analyser(analyser)
-        # TODO i dont understand what this does
-        # I put 4 because of dimensions of output shape
-        # I think it is 1 in source code since minimal shape is (batch, regression/class)
         self._add_one_dimension = len(analyser.shape) < 4
 
     def get_adapter(self):
