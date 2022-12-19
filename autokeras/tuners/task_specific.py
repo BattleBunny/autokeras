@@ -14,18 +14,6 @@
 
 from autokeras.tuners import greedy
 
-SATELLITE_IMAGE_CLASSIFIER= [
-     {
-        "image_block_1/block_type": "rsblock",
-        "image_block_1/normalize": True,
-        "image_block_1/augment": False,
-        "classification_head_1/spatial_reduction_1/reduction_type": "global_avg",
-        "classification_head_1/dropout": 0,
-        "optimizer": "adam",
-        "learning_rate": 2e-5,
-    },
-
-]
 
 IMAGE_CLASSIFIER = [
     {
@@ -168,10 +156,6 @@ STRUCTURED_DATA_REGRESSOR = [
 class ImageClassifierTuner(greedy.Greedy):
     def __init__(self, **kwargs):
         super().__init__(initial_hps=IMAGE_CLASSIFIER, **kwargs)
-
-class SatelliteImageClassifierTuner(greedy.Greedy):
-    def __init__(self, **kwargs):
-        super().__init__(initial_hps=SATELLITE_IMAGE_CLASSIFIER, **kwargs)
         
 class TextClassifierTuner(greedy.Greedy):
     def __init__(self, **kwargs):

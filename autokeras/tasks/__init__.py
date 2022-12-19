@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from autokeras.tasks.image import ImageClassifier
-from autokeras.tasks.image import SatelliteImageClassifier
 from autokeras.tasks.image import ImageRegressor
 from autokeras.tasks.structured_data import StructuredDataClassifier
 from autokeras.tasks.structured_data import StructuredDataRegressor
